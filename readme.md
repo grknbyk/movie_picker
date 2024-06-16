@@ -16,6 +16,7 @@ The Movie Picker App is a Python application that helps users browse and filter 
 - csv_prep.ipynb  : Jupyter Notebook for preprocessing the movie data and creating the movie_list.csv file.
 - movie_list.csv  : The preprocessed movie data file.
 - movie_picker.py : The main Python script that runs the Movie Picker App.
+- run.bat         : Open to run the movie_picker.py
 
 ### Screenshots
 
