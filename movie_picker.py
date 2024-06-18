@@ -169,6 +169,7 @@ class MovieApp:
             btn.config(command=lambda: self.remove_genre(genre, btn))
             btn.pack(side=tk.LEFT, padx=5)
 
+            self.update_active_filters_frame()
             self.display_movies()
 
     def remove_genre(self, genre, button):
@@ -186,6 +187,7 @@ class MovieApp:
         self.rating_button.config(command=lambda: self.remove_rating(rating, self.rating_button))
         self.rating_button.pack(side=tk.LEFT, padx=5)
 
+        self.update_active_filters_frame()
         self.display_movies()
 
     def remove_rating(self, rating, button):
