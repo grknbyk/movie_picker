@@ -58,7 +58,10 @@ class MovieApp:
         self.display_movies()
 
     def create_widgets(self):
-        self.first_frame = ttk.Frame(self.root)
+        self.top_frame = ttk.Frame(self.root)
+        self.top_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
+        
+        self.first_frame = ttk.Frame(self.top_frame)
         self.first_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
 
         ttk.Label(self.first_frame, text="Search: ").pack(side=tk.LEFT, padx=5)
@@ -79,7 +82,7 @@ class MovieApp:
         self.random_button = ttk.Button(self.first_frame, text="Random Movie", width=18, command=self.display_random_movie)
         self.random_button.pack(side=tk.LEFT, padx=5)
 
-        self.second_frame = ttk.Frame(self.root)
+        self.second_frame = ttk.Frame(self.top_frame)
         self.second_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
 
         # Watched filter
@@ -97,7 +100,7 @@ class MovieApp:
         for genre in self.genres:
             self.genre_menu.menu.add_command(label=genre, command=lambda g=genre: self.add_genre(g))
 
-        self.active_filters_frame = ttk.Frame(self.root)
+        self.active_filters_frame = ttk.Frame(self.top_frame)
         self.active_filters_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
 
         # IMDb rating filter
