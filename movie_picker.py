@@ -153,12 +153,14 @@ class MovieApp:
         for col in columns:
             self.movie_tree.heading(col, text=col, command=lambda c=col: self.sort_column(c, False))
         
+        self.movie_tree.config(selectmode='browse') # Disable multiple selection
         self.movie_tree.column('Title', width=200)
         self.movie_tree.column('Year', width=50, anchor=tk.CENTER)
         self.movie_tree.column('Rating', width=50, anchor=tk.CENTER)
         self.movie_tree.column('Runtime', width=50, anchor=tk.CENTER)
         self.movie_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.movie_tree.bind("<Double-1>", self.open_movie_url)
+        self.movie_tree.bind("<Button-3>", lambda e: self.change_watched_status(e))
 
         # Movie list scrollbar
         self.scrollbar = ttk.Scrollbar(self.movie_frame, orient=tk.VERTICAL, command=self.movie_tree.yview)
@@ -317,6 +319,19 @@ class MovieApp:
     def clear_search(self):
         self.search_entry.delete(0, tk.END)
         self.display_movies()
+    
+    # changes the watched status of the selected movie
+    def change_watched_status(self, event):
+        selected_item = self.movie_tree.focus()
+        if not selected_item:
+            return
+        
+        for movie in self.movies:
+            if movie.original_title == self.movie_tree.item(selected_item)['values'][0]:
+                movie.watched = not movie.watched
+                break
+        self.display_movies()
+        
         
 
 if __name__ == "__main__":
