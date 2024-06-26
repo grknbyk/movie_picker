@@ -1,9 +1,9 @@
 import csv
 import random
-import webbrowser
 import tkinter as tk
-from tkinter import ttk
+import webbrowser
 from dataclasses import dataclass
+from tkinter import ttk
 
 
 @dataclass
@@ -19,13 +19,14 @@ class Movie:
 
 def read_csv(filename):
     movies = []
+    genres_set = set()
     with open(filename, 'r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:
             genres = row['Genres'].split(', ')
             movie = Movie(
                 watched=row['Watched'] == 'True',
-                original_title=row['Original Title'],
+                original_title=row['Title'],
                 imdb_rating=float(row['IMDb Rating']),
                 runtime=int(row['Runtime (mins)']),
                 year=int(row['Year']),
@@ -33,22 +34,19 @@ def read_csv(filename):
                 url=row['URL']
             )
             movies.append(movie)
-    return movies
+            genres_set.update(genres)
+    return movies, sorted(genres_set)
 
-movies_csv = read_csv('movie_list.csv')
+movies, genres = read_csv('movie_list.csv')
 
 
 class MovieApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Movie Pick App")
-
-        self.genres = set()
         
-        self.movies = movies_csv
+        self.movies, self.genres = read_csv('movie_list.csv')
         random.shuffle(self.movies)
-        for movie in self.movies:
-            self.genres.update(movie.genres)
 
         self.selected_genres = set()
         self.selected_rating = None
@@ -86,9 +84,14 @@ class MovieApp:
         self.second_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
 
         # Watched filter
-        self.watched_var = tk.BooleanVar()
-        self.watched_check = ttk.Checkbutton(self.second_frame, text="Watched", variable=self.watched_var, command=self.display_movies)
-        self.watched_check.pack(side=tk.LEFT, padx=5)
+        self.watched_filter = ttk.Combobox(self.second_frame,\
+                                            values=[" All", " Watched", " Unwatched"],\
+                                            width=10,\
+                                            style="TMenubutton",\
+                                            state="readonly")
+        self.watched_filter.set(self.watched_filter["values"][0])
+        self.watched_filter.bind("<<ComboboxSelected>>", lambda e: (self.display_movies(),self.watched_filter.select_clear()))
+        self.watched_filter.pack(side=tk.LEFT, padx=10)
 
         # Genre filter
         self.genre_menu = ttk.Menubutton(self.second_frame, text="Genres")
@@ -216,9 +219,6 @@ class MovieApp:
             if search_text and search_text not in movie.original_title.lower():
                 continue
 
-            if self.watched_var.get() and not movie.watched:
-                continue
-
             if movie.imdb_rating < rating_filter:
                 continue
 
@@ -229,6 +229,11 @@ class MovieApp:
                 continue
 
             if not self.selected_genres.issubset(movie.genres):
+                continue
+            
+            watch_filter = self.watched_filter.get().lstrip()
+            if (watch_filter == "Watched" and not movie.watched) or\
+                (watch_filter == "Unwatched" and movie.watched):
                 continue
 
             movie_count += 1
