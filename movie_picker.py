@@ -51,7 +51,6 @@ class MovieApp:
         self.selected_genres = set()
         self.selected_rating = None
 
-        ttk.Style().configure("TMenubutton", background="#dddddd")
         self.create_widgets()
         self.display_movies()
 
@@ -245,15 +244,15 @@ class MovieApp:
             item_tags = ('watched' if movie.watched else 'unwatched',)
             self.movie_tree.insert('', tk.END, values=(movie.original_title, movie.year, movie.imdb_rating, movie.runtime, ', '.join(movie.genres), movie.url), tags=item_tags)
         
-        self.movie_tree.tag_configure('watched', background='#90EE90')
-        self.movie_tree.tag_configure('unwatched', background='#FF7F50')
+        self.movie_tree.tag_configure('watched', background='#C7F7C7')
+        self.movie_tree.tag_configure('unwatched', background='#FFBFA8')
         
         string = f"Total movies: {movie_count} | Watched {watched_count} : %{watched_count/movie_count*100:.2f} | Unwatched {movie_count-watched_count} : %{(movie_count-watched_count)/movie_count*100:.2f} | Total genres: {len(self.genres)} |\tDouble click to a movie to open IMDb page"
         self.sub_label.config(text=string)
 
     def remove_filters(self):
         self.search_entry.delete(0, tk.END)
-        self.watched_var.set(False)
+        self.watched_filter.set(" All")
         self.selected_genres.clear()
         self.selected_rating = None
         self.year_from_entry.delete(0, tk.END)
@@ -291,7 +290,7 @@ class MovieApp:
             ttk.Label(new_window, text="You haven't watched this movie yet!", font=("Times New Roman", 12), foreground="green").pack(pady=5)
 
     def update_active_filters_frame(self):
-        if self.selected_genres or self.selected_rating or self.watched_var.get():
+        if self.selected_genres or self.selected_rating:
             self.active_filters_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
         else:
             self.active_filters_frame.pack_forget()  # Hide the frame if no filters are active
